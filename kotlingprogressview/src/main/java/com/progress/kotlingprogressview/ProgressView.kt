@@ -14,7 +14,7 @@ enum class Direction(val value: Int) {
     fromLeft(0),
     fromRight(1);
     companion object {
-        fun getByValue(value: Int): Direction {
+        internal fun getByValue(value: Int): Direction {
             return when (value) {
                 Direction.fromLeft.value -> Direction.fromLeft
                 Direction.fromRight.value -> Direction.fromRight
@@ -24,12 +24,12 @@ enum class Direction(val value: Int) {
     }
 }
 
-enum class Shape(val value: Int) {
+internal enum class Shape(val value: Int) {
     line(0),
     arc(1),
     circle(2);
     companion object {
-        fun getByValue(value: Int): Shape {
+        internal fun getByValue(value: Int): Shape {
             return when (value) {
                 Shape.line.value -> Shape.line
                 Shape.arc.value -> Shape.arc
@@ -61,14 +61,12 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
             invalidate()
         }
     var animationDuration = 1500
-
     var backgroundWidth = 0F
         set(value) {
             field = value
             backgroundPaint.strokeWidth = value
             invalidate()
         }
-
     var progressWidth = 0F
         set(value) {
             field = value
