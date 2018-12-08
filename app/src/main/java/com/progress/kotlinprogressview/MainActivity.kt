@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         progressCircle.applyGradient(Color.GREEN, Color.YELLOW, Color.RED)
         progressButton.setOnClickListener {
             progressCircle.progress = r.nextFloat()
+            progressLine.progress = r.nextFloat()
         }
     }
 }

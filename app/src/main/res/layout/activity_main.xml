@@ -21,8 +21,25 @@
             app:pvProgress="0.5"
             app:pvShape="circle"/>
 
-    <Button android:id="@+id/progressButton"
+    <com.progress.kotlingprogressview.ProgressView
+            android:id="@+id/progressLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            app:pvDirection="fromLeft"
             app:layout_constraintTop_toBottomOf="@id/progressCircle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="10dp"
+            app:pvProgress="0.5"
+            app:pvShape="line"/>
+
+
+    <Button android:id="@+id/progressButton"
+            app:layout_constraintTop_toBottomOf="@id/progressLine"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="10dp"

@@ -135,7 +135,7 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
         when (shape) {
             Shape.line -> {
                 rectF.set(0F, highStroke / 2, min.toFloat(), highStroke / 2)
-                setMeasuredDimension(width, Math.max(highStroke, height.toFloat()).toInt())
+                setMeasuredDimension(width, Math.min(highStroke, height.toFloat()).toInt())
             }
             Shape.arc -> {
                 setMeasuredDimension(min, min / 2)
@@ -180,14 +180,14 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
         if (canvas == null) {
             return
         }
+        val y = canvas.height / 2F
         val width: Float = canvas.width.toFloat()
-        canvas.drawLine(width, y, 0F, y, backgroundPaint)
-        val y: Float = canvas.height / 2F
+        canvas.drawLine(0F, y, width, y, backgroundPaint)
         val progressWidth = animatedProgress * width
         if (progressDirection == Direction.fromRight) {
             canvas.drawLine(width, y, width - progressWidth, y, progressPaint)
         } else {
-            canvas.drawLine(0F, y, width, y, progressPaint)
+            canvas.drawLine(0F, y, progressWidth, y, progressPaint)
         }
     }
 
