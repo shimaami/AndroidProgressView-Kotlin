@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
+import android.graphics.Shader.TileMode
 import android.support.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.View
@@ -98,17 +99,21 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
 
     init {
         val typedArray = contex.theme.obtainStyledAttributes(attributeSet, R.styleable.ProgressView, 0, 0)
-        val directionValue = typedArray.getInt(R.styleable.ProgressView_pvDirection, Direction.fromLeft.value)
-        progressDirection = Direction.getByValue(directionValue)
-        val shapeValue = typedArray.getInt(R.styleable.ProgressView_pvShape, Shape.arc.value)
+
+        var shapeValue: Int = Shape.arc.value
+        with (typedArray) {
+            val directionValue = getInt(R.styleable.ProgressView_pvDirection, Direction.fromLeft.value)
+            progressDirection = Direction.getByValue(directionValue)
+            shapeValue = getInt(R.styleable.ProgressView_pvShape, shapeValue)
+            progress = getFloat(R.styleable.ProgressView_pvProgress, progress)
+            backgroundWidth = getDimension(R.styleable.ProgressView_pvBackgroundWidth, 2.toPx())
+            progressWidth = getDimension(R.styleable.ProgressView_pvProgressWidth, 10.toPx())
+            progressBackgroundColor = getColor(R.styleable.ProgressView_pvBackgroundColor, Color.BLACK)
+            progressColor = getColor(R.styleable.ProgressView_pvProgressColor, Color.RED)
+            animationDuration = getInt(R.styleable.ProgressView_pvAnimateDuration, animationDuration)
+            recycle()
+        }
         shape = Shape.getByValue(shapeValue)
-        progress = typedArray.getFloat(R.styleable.ProgressView_pvProgress, progress)
-        backgroundWidth = typedArray.getDimension(R.styleable.ProgressView_pvBackgroundWidth, 2.toPx())
-        progressWidth = typedArray.getDimension(R.styleable.ProgressView_pvProgressWidth, 10.toPx())
-        progressBackgroundColor = typedArray.getColor(R.styleable.ProgressView_pvBackgroundColor, Color.BLACK)
-        progressColor = typedArray.getColor(R.styleable.ProgressView_pvProgressColor, Color.RED)
-        animationDuration = typedArray.getInt(R.styleable.ProgressView_pvAnimateDuration, animationDuration)
-        typedArray.recycle()
 
         backgroundPaint.style = Paint.Style.STROKE
 
@@ -150,14 +155,17 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
     private fun setProgressWithAnimation(progress: Float) {
         val propertyValuesHolder = PropertyValuesHolder.ofFloat(PROPERTY_PROGRESS, animatedProgress, progress)
         val animator = ValueAnimator()
-        animator.setValues(propertyValuesHolder)
-        animator.interpolator = DecelerateInterpolator()
-        animator.duration = animationDuration.toLong()
-        animator.addUpdateListener {
-            animatedProgress = it.getAnimatedValue(PROPERTY_PROGRESS) as Float
-            invalidate()
+        with(animator) {
+           setValues(propertyValuesHolder)
+           interpolator = DecelerateInterpolator()
+           duration = animationDuration.toLong()
+           addUpdateListener {
+                animatedProgress = it.getAnimatedValue(PROPERTY_PROGRESS) as Float
+                invalidate()
+            }
+           start()
         }
-        animator.start()
+       
     }
 
     fun applyGradient(vararg colors: Int) {
@@ -182,24 +190,28 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
         }
         val y = canvas.height / 2F
         val width: Float = canvas.width.toFloat()
-        canvas.drawLine(0F, y, width, y, backgroundPaint)
         val progressWidth = animatedProgress * width
-        if (progressDirection == Direction.fromRight) {
-            canvas.drawLine(width, y, width - progressWidth, y, progressPaint)
-        } else {
-            canvas.drawLine(0F, y, progressWidth, y, progressPaint)
+        with(canvas) {
+            drawLine(0F, y, width, y, backgroundPaint)
+            if (progressDirection == Direction.fromRight) {
+                drawLine(width, y, width - progressWidth, y, progressPaint)
+            } else {
+                drawLine(0F, y, progressWidth, y, progressPaint)
+            }
         }
     }
 
     private fun drawArc(canvas: Canvas?, sweepAngle: Float) {
         var startAngle = 180F
-        canvas?.drawArc(rectF, startAngle, sweepAngle, false, backgroundPaint)
-        var progressSweepAngle = animatedProgress * sweepAngle
-        if (progressDirection == Direction.fromRight) {
-            startAngle = 0F
-            progressSweepAngle = -progressSweepAngle
+        canvas?.let {
+            canvas.drawArc(rectF, startAngle, sweepAngle, false, backgroundPaint)
+            var progressSweepAngle = animatedProgress * sweepAngle
+            if (progressDirection == Direction.fromRight) {
+                startAngle = 0F
+                progressSweepAngle = -progressSweepAngle
+            }
+            canvas.drawArc(rectF, startAngle, progressSweepAngle, false, progressPaint)
         }
-        canvas?.drawArc(rectF, startAngle, progressSweepAngle, false, progressPaint)
     }
 
     private fun updateShader() {
@@ -217,7 +229,7 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
                 0F,
                 gradientColors,
                 null,
-                android.graphics.Shader.TileMode.CLAMP
+                TileMode.CLAMP
             )
             Shape.arc -> LinearGradient(
                 0F,
@@ -226,7 +238,7 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
                 measuredHeight.toFloat(),
                 gradientColors,
                 null,
-                android.graphics.Shader.TileMode.CLAMP
+                TileMode.CLAMP
             )
             Shape.circle -> LinearGradient(
                 0F,
@@ -235,7 +247,7 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
                 measuredHeight.toFloat(),
                 gradientColors,
                 null,
-                android.graphics.Shader.TileMode.CLAMP
+                TileMode.CLAMP
             )
         }
         progressPaint.shader = shader
