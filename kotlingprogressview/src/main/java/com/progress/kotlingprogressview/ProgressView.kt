@@ -6,10 +6,10 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.Shader.TileMode
-import android.support.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import androidx.annotation.ColorInt
 
 enum class Direction(val value: Int) {
     fromLeft(0),
@@ -32,9 +32,9 @@ internal enum class Shape(val value: Int) {
     companion object {
         internal fun getByValue(value: Int): Shape {
             return when (value) {
-                Shape.line.value -> Shape.line
-                Shape.arc.value -> Shape.arc
-                Shape.circle.value -> Shape.circle
+                line.value -> line
+                arc.value -> arc
+                circle.value -> circle
                 else -> throw IllegalArgumentException()
             }
         }
@@ -221,13 +221,16 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
             return
         }
 
+        val unwrapedColors = gradientColors ?: return
+
+
         val shader = when (shape) {
             Shape.line -> LinearGradient(
                 0F,
                 0F,
                 measuredWidth.toFloat(),
                 0F,
-                gradientColors,
+                unwrapedColors,
                 null,
                 TileMode.CLAMP
             )
@@ -236,7 +239,7 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
                 measuredWidth / 2F,
                 measuredWidth.toFloat(),
                 measuredHeight.toFloat(),
-                gradientColors,
+                unwrapedColors,
                 null,
                 TileMode.CLAMP
             )
@@ -245,7 +248,7 @@ open class ProgressView(contex: Context, attributeSet: AttributeSet) : View(cont
                 0F,
                 measuredWidth.toFloat(),
                 measuredHeight.toFloat(),
-                gradientColors,
+                unwrapedColors,
                 null,
                 TileMode.CLAMP
             )
