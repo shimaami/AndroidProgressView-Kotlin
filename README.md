@@ -32,7 +32,7 @@ implementation 'com.shimaami.android:kotlinprogressview:1.0.0'
 # Home To Use
 ### XML
 ```
- <com.progress.kotlingprogressview.ProgressView
+ <com.shimaami.kotlinprogressview.ProgressView
             android:id="@+id/progressCircle"
             android:layout_width="150dp"
             android:layout_height="150dp"
